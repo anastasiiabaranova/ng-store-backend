@@ -14,17 +14,19 @@ export class CartItemController {
   }
 
   @Post()
-  async create(@Body() dto: Partial<CartItemEntity>): Promise<CartItemEntity> {
+  async create(@Body() dto: Partial<CartItemEntity>): Promise<CartItemEntity[]> {
     const duplicate = await this.entitiesRepository.findOne({ id: dto.id })
     if (duplicate) {
-      return this.entitiesRepository.save(
+      await this.entitiesRepository.save(
         Object.assign(
           { ...duplicate },
           { amount: duplicate.amount + dto.amount }
         )
       );
+    } else {
+      await this.entitiesRepository.save(dto);
     }
-    return this.entitiesRepository.save(dto);
+    return this.getAll();
   }
 
   @Put()
